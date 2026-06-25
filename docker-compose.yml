@@ -1,0 +1,109 @@
+name: hospital-bed-testbed
+
+# Full digital-twin + SDC topology:
+#   pulse-patient    validated physiology engine (Pulse) + control API
+#   sdc-ventilator   ventilator device twin, IEEE 11073 SDC provider (settable)
+#   sdc-monitor      patient-monitor device twin, SDC provider (vital metrics)
+#   sdc-bridge       SDC consumer -> WebSocket feed for the dashboards
+#   room / monitor   browser views (ground truth / bedside monitor)
+#   sdc-attacker     unauthenticated SDC consumer + attack console
+#
+# All SDC participants share one bridge network so WS-Discovery multicast works.
+
+networks:
+  ward-net:
+    driver: bridge
+
+services:
+  pulse-patient:
+    build: ./services/pulse-patient
+    container_name: hbt-pulse-patient
+    hostname: pulse-patient
+    networks: [ward-net]
+    environment:
+      SIM_DT: "0.5"
+      # Pulse deterioration is clinically realistic (~5 min apnea-to-arrest).
+      # Accelerate wall-clock for a watchable live demo; set to 1.0 for real time.
+      SPEED: "4.0"
+      LOG_PATH: "/data/pulse_raw.jsonl"
+    volumes:
+      - ./avaliacao:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/healthz')\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  sdc-ventilator:
+    build: ./services/sdc-ventilator
+    container_name: hbt-sdc-ventilator
+    hostname: sdc-ventilator
+    networks: [ward-net]
+    environment:
+      PULSE_BASE: "http://pulse-patient:8000"
+    depends_on:
+      pulse-patient:
+        condition: service_healthy
+    restart: unless-stopped
+
+  sdc-monitor:
+    build: ./services/sdc-monitor
+    container_name: hbt-sdc-monitor
+    hostname: sdc-monitor
+    networks: [ward-net]
+    environment:
+      PULSE_URL: "http://pulse-patient:8000/api/state"
+    depends_on:
+      pulse-patient:
+        condition: service_healthy
+    restart: unless-stopped
+
+  sdc-bridge:
+    build: ./services/sdc-bridge
+    container_name: hbt-sdc-bridge
+    hostname: sdc-bridge
+    networks: [ward-net]
+    ports:
+      - "8000:8000"
+    environment:
+      PULSE_BASE: "http://pulse-patient:8000"
+      LOG_PATH: "/data/timeline.jsonl"
+    volumes:
+      - ./avaliacao:/data
+    depends_on:
+      pulse-patient:
+        condition: service_healthy
+    restart: unless-stopped
+
+  monitor:
+    build: ./services/monitor
+    container_name: hbt-monitor
+    networks: [ward-net]
+    ports:
+      - "8083:80"
+    depends_on: [sdc-bridge]
+    restart: unless-stopped
+
+  room:
+    build: ./services/room
+    container_name: hbt-room
+    networks: [ward-net]
+    ports:
+      - "8082:80"
+    depends_on: [sdc-bridge]
+    restart: unless-stopped
+
+  sdc-attacker:
+    build: ./services/sdc-attacker
+    container_name: hbt-sdc-attacker
+    hostname: sdc-attacker
+    networks: [ward-net]
+    ports:
+      - "8090:8090"
+    environment:
+      PULSE_BASE: "http://pulse-patient:8000"
+    depends_on:
+      pulse-patient:
+        condition: service_healthy
+    restart: unless-stopped

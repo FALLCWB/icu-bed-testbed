@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msg:GetMdibResponse
+	xmlns:ext="http://standards.ieee.org/downloads/11073/11073-10207-2017/extension"
+	xmlns:msg="http://standards.ieee.org/downloads/11073/11073-10207-2017/message"
+	xmlns:pm="http://standards.ieee.org/downloads/11073/11073-10207-2017/participant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	SequenceId="urn:oid:1">
+	<msg:Mdib SequenceId="urn:oid:1">
+		<pm:MdDescription>
+			<!-- Multi-parameter patient monitor. MDC type codes per ISO/IEEE
+			     11073-10101 nomenclature (CodingSystem urn:oid:1.2.840.10004.1.1.1.0.0.1). -->
+			<pm:Mds Handle="mds0" SafetyClassification="MedA">
+				<pm:Type Code="69799"> <!-- MDC_DEV_ANALY_SAT_O2_MDS / patient monitor -->
+					<pm:ConceptDescription Lang="en-US">Patient monitor</pm:ConceptDescription>
+				</pm:Type>
+				<pm:SystemContext Handle="SC.mds0">
+					<pm:PatientContext Handle="PC.mds0" />
+					<pm:LocationContext Handle="LC.mds0" />
+				</pm:SystemContext>
+				<pm:Vmd Handle="vmd.vitals" SafetyClassification="MedA">
+					<pm:Type Code="69965"> <!-- vital signs VMD -->
+						<pm:ConceptDescription Lang="en-US">Vital signs</pm:ConceptDescription>
+					</pm:Type>
+					<!-- Vital signs are measurements (read-only). A conforming monitor
+					     exposes no set operations on them. Telemetry injection is
+					     therefore performed not by writing here but by a rogue provider
+					     impersonating this device on the unauthenticated SDC network. -->
+					<pm:Channel Handle="ch.vitals" SafetyClassification="MedA">
+						<pm:Type Code="69966">
+							<pm:ConceptDescription Lang="en-US">Vital sign measurements</pm:ConceptDescription>
+						</pm:Type>
+						<pm:Metric Handle="spo2" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor"
+							MetricCategory="Msrmt" MetricAvailability="Cont" Resolution="0.1">
+							<pm:Type Code="150456"> <!-- MDC_PULS_OXIM_SAT_O2 -->
+								<pm:ConceptDescription Lang="en-US">SpO2</pm:ConceptDescription>
+							</pm:Type>
+							<pm:Unit Code="262688"> <!-- MDC_DIM_PERCENT -->
+								<pm:ConceptDescription Lang="en-US">%</pm:ConceptDescription>
+							</pm:Unit>
+							<pm:TechnicalRange Upper="100" Lower="0" />
+						</pm:Metric>
+						<pm:Metric Handle="hr" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor"
+							MetricCategory="Msrmt" MetricAvailability="Cont" Resolution="1">
+							<pm:Type Code="147842"> <!-- MDC_ECG_HEART_RATE -->
+								<pm:ConceptDescription Lang="en-US">Heart rate</pm:ConceptDescription>
+							</pm:Type>
+							<pm:Unit Code="264864"> <!-- MDC_DIM_BEAT_PER_MIN -->
+								<pm:ConceptDescription Lang="en-US">bpm</pm:ConceptDescription>
+							</pm:Unit>
+							<pm:TechnicalRange Upper="300" Lower="0" />
+						</pm:Metric>
+						<pm:Metric Handle="map" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor"
+							MetricCategory="Msrmt" MetricAvailability="Cont" Resolution="1">
+							<pm:Type Code="150092"> <!-- MDC_PRESS_BLD_ART_MEAN -->
+								<pm:ConceptDescription Lang="en-US">Mean arterial pressure</pm:ConceptDescription>
+							</pm:Type>
+							<pm:Unit Code="266016"> <!-- MDC_DIM_MMHG -->
+								<pm:ConceptDescription Lang="en-US">mmHg</pm:ConceptDescription>
+							</pm:Unit>
+							<pm:TechnicalRange Upper="300" Lower="0" />
+						</pm:Metric>
+						<pm:Metric Handle="etco2" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor"
+							MetricCategory="Msrmt" MetricAvailability="Cont" Resolution="0.1">
+							<pm:Type Code="151708"> <!-- MDC_AWAY_CO2_ET -->
+								<pm:ConceptDescription Lang="en-US">End-tidal CO2</pm:ConceptDescription>
+							</pm:Type>
+							<pm:Unit Code="266016"> <!-- MDC_DIM_MMHG -->
+								<pm:ConceptDescription Lang="en-US">mmHg</pm:ConceptDescription>
+							</pm:Unit>
+							<pm:TechnicalRange Upper="150" Lower="0" />
+						</pm:Metric>
+						<pm:Metric Handle="rr" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor"
+							MetricCategory="Msrmt" MetricAvailability="Cont" Resolution="1">
+							<pm:Type Code="151562"> <!-- MDC_RESP_RATE -->
+								<pm:ConceptDescription Lang="en-US">Respiration rate</pm:ConceptDescription>
+							</pm:Type>
+							<pm:Unit Code="264928"> <!-- MDC_DIM_RESP_PER_MIN -->
+								<pm:ConceptDescription Lang="en-US">/min</pm:ConceptDescription>
+							</pm:Unit>
+							<pm:TechnicalRange Upper="80" Lower="0" />
+						</pm:Metric>
+					</pm:Channel>
+				</pm:Vmd>
+			</pm:Mds>
+		</pm:MdDescription>
+	</msg:Mdib>
+</msg:GetMdibResponse>

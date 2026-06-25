@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msg:GetMdibResponse
+	xmlns:ext="http://standards.ieee.org/downloads/11073/11073-10207-2017/extension"
+	xmlns:msg="http://standards.ieee.org/downloads/11073/11073-10207-2017/message"
+	xmlns:pm="http://standards.ieee.org/downloads/11073/11073-10207-2017/participant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	SequenceId="urn:oid:1">
+	<msg:Mdib SequenceId="urn:oid:1">
+		<pm:MdDescription>
+			<!-- Mechanical ventilator. Settings are exposed as settable numeric
+			     metrics via SetValueOperations in the SCO. Plain SDC applies no
+			     authentication to these operations: any consumer on the network
+			     can change them. That is the actuation attack surface. -->
+			<pm:Mds Handle="mds0" SafetyClassification="MedA">
+				<pm:Type Code="69711"> <!-- ventilator MDS -->
+					<pm:ConceptDescription Lang="en-US">Mechanical ventilator</pm:ConceptDescription>
+				</pm:Type>
+				<pm:SystemContext Handle="SC.mds0">
+					<pm:PatientContext Handle="PC.mds0" />
+					<pm:LocationContext Handle="LC.mds0" />
+				</pm:SystemContext>
+				<pm:Vmd Handle="vmd.vent" SafetyClassification="MedA">
+					<pm:Type Code="69799">
+						<pm:ConceptDescription Lang="en-US">Ventilator settings</pm:ConceptDescription>
+					</pm:Type>
+					<pm:Sco Handle="sco.vent">
+						<pm:Operation xsi:type="pm:SetValueOperationDescriptor"
+							Handle="set.tidal_volume" OperationTarget="tidal_volume"
+							SafetyClassification="MedA" MaxTimeToFinish="PT1S" Retriggerable="true" AccessLevel="Usr">
+							<pm:Type Code="196276"><pm:ConceptDescription Lang="en-US">set tidal volume</pm:ConceptDescription></pm:Type>
+						</pm:Operation>
+						<pm:Operation xsi:type="pm:SetValueOperationDescriptor"
+							Handle="set.resp_rate" OperationTarget="resp_rate"
+							SafetyClassification="MedA" MaxTimeToFinish="PT1S" Retriggerable="true" AccessLevel="Usr">
+							<pm:Type Code="196276"><pm:ConceptDescription Lang="en-US">set respiratory rate</pm:ConceptDescription></pm:Type>
+						</pm:Operation>
+						<pm:Operation xsi:type="pm:SetValueOperationDescriptor"
+							Handle="set.peep" OperationTarget="peep"
+							SafetyClassification="MedA" MaxTimeToFinish="PT1S" Retriggerable="true" AccessLevel="Usr">
+							<pm:Type Code="196276"><pm:ConceptDescription Lang="en-US">set PEEP</pm:ConceptDescription></pm:Type>
+						</pm:Operation>
+						<pm:Operation xsi:type="pm:SetValueOperationDescriptor"
+							Handle="set.fio2" OperationTarget="fio2"
+							SafetyClassification="MedA" MaxTimeToFinish="PT1S" Retriggerable="true" AccessLevel="Usr">
+							<pm:Type Code="196276"><pm:ConceptDescription Lang="en-US">set FiO2</pm:ConceptDescription></pm:Type>
+						</pm:Operation>
+						<pm:Operation xsi:type="pm:SetValueOperationDescriptor"
+							Handle="set.connected" OperationTarget="connected"
+							SafetyClassification="MedA" MaxTimeToFinish="PT1S" Retriggerable="true" AccessLevel="Usr">
+							<pm:Type Code="196276"><pm:ConceptDescription Lang="en-US">set patient-circuit connection</pm:ConceptDescription></pm:Type>
+						</pm:Operation>
+					</pm:Sco>
+					<pm:Channel Handle="ch.vent" SafetyClassification="MedA">
+						<pm:Type Code="69800">
+							<pm:ConceptDescription Lang="en-US">Ventilator settings</pm:ConceptDescription>
+						</pm:Type>
+						<pm:Metric Handle="tidal_volume" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor" MetricCategory="Set" MetricAvailability="Cont" Resolution="1">
+							<pm:Type Code="151668"><pm:ConceptDescription Lang="en-US">Tidal volume</pm:ConceptDescription></pm:Type>
+							<pm:Unit Code="263762"><pm:ConceptDescription Lang="en-US">mL</pm:ConceptDescription></pm:Unit>
+							<pm:TechnicalRange Upper="2000" Lower="0" />
+						</pm:Metric>
+						<pm:Metric Handle="resp_rate" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor" MetricCategory="Set" MetricAvailability="Cont" Resolution="1">
+							<pm:Type Code="151562"><pm:ConceptDescription Lang="en-US">Respiratory rate</pm:ConceptDescription></pm:Type>
+							<pm:Unit Code="264928"><pm:ConceptDescription Lang="en-US">/min</pm:ConceptDescription></pm:Unit>
+							<pm:TechnicalRange Upper="80" Lower="0" />
+						</pm:Metric>
+						<pm:Metric Handle="peep" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor" MetricCategory="Set" MetricAvailability="Cont" Resolution="1">
+							<pm:Type Code="151844"><pm:ConceptDescription Lang="en-US">PEEP</pm:ConceptDescription></pm:Type>
+							<pm:Unit Code="263442"><pm:ConceptDescription Lang="en-US">cmH2O</pm:ConceptDescription></pm:Unit>
+							<pm:TechnicalRange Upper="30" Lower="0" />
+						</pm:Metric>
+						<pm:Metric Handle="fio2" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor" MetricCategory="Set" MetricAvailability="Cont" Resolution="0.01">
+							<pm:Type Code="152000"><pm:ConceptDescription Lang="en-US">FiO2</pm:ConceptDescription></pm:Type>
+							<pm:Unit Code="262688"><pm:ConceptDescription Lang="en-US">fraction</pm:ConceptDescription></pm:Unit>
+							<pm:TechnicalRange Upper="1" Lower="0.21" />
+						</pm:Metric>
+						<pm:Metric Handle="connected" SafetyClassification="MedA"
+							xsi:type="pm:NumericMetricDescriptor" MetricCategory="Set" MetricAvailability="Cont" Resolution="1">
+							<pm:Type Code="196616"><pm:ConceptDescription Lang="en-US">Patient circuit connected (1=yes,0=no)</pm:ConceptDescription></pm:Type>
+							<pm:Unit Code="262656"><pm:ConceptDescription Lang="en-US">bool</pm:ConceptDescription></pm:Unit>
+							<pm:TechnicalRange Upper="1" Lower="0" />
+						</pm:Metric>
+					</pm:Channel>
+				</pm:Vmd>
+			</pm:Mds>
+		</pm:MdDescription>
+	</msg:Mdib>
+</msg:GetMdibResponse>

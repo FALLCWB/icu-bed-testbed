@@ -1,0 +1,6 @@
+avaliacao/*
+!avaliacao/canonical/
+__pycache__/
+*.pyc
+figures/*.pdf
+figures/*.png

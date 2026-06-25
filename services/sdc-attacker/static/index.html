@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #02050a; }
+    @keyframes atkCursor { 50% { opacity: 0; } }
+    @keyframes atkFlicker { 0%,100% { opacity: .035; } 50% { opacity: .06; } }
+    @keyframes atkScan { from { transform: translateY(0); } to { transform: translateY(6px); } }
+    @keyframes atkLed { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    @keyframes atkGlow { 0%,100% { opacity:.5; } 50% { opacity:.8; } }
+  </style>
+</helmet>
+<div style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(120% 120% at 50% 30%, #08120c 0%, #03070a 70%, #010306 100%); overflow:hidden;">
+  <div id="atkDev" style="position:relative; width:1280px; height:800px; transform-origin:center center;">
+    <!-- terminal window -->
+    <div style="position:relative; width:100%; height:100%; background:linear-gradient(180deg,#04090a,#02060a); border:1px solid #14361f; border-radius:10px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.7), inset 0 0 120px rgba(0,40,12,.18);">
+      <!-- titlebar -->
+      <div style="display:flex; align-items:center; gap:10px; height:38px; padding:0 14px; background:linear-gradient(#0a1410,#06100b); border-bottom:1px solid #143820;">
+        <span style="width:12px; height:12px; border-radius:50%; background:#ff5f56;"></span>
+        <span style="width:12px; height:12px; border-radius:50%; background:#ffbd2e;"></span>
+        <span style="width:12px; height:12px; border-radius:50%; background:#27c93f;"></span>
+        <span style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:#3f7a52; letter-spacing:.5px;">root@icu-net: ~/exploits — bash — 132×40</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#2f5a3c;">⌥⌘</span>
+      </div>
+
+      <!-- body -->
+      <div style="display:grid; grid-template-columns:360px 1fr; height:762px;">
+        <!-- ===== sidebar ===== -->
+        <div style="border-right:1px solid #0f2a18; padding:18px 16px; display:flex; flex-direction:column; gap:16px; background:linear-gradient(180deg, rgba(8,20,12,.5), rgba(3,8,6,.5));">
+          <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.25; color:#39ff84; text-shadow:0 0 8px rgba(57,255,132,.45);">╔════════════════════════════╗
+║  ICU-NET  ·  RED-TEAM SHELL ║
+║  unauth device control      ║
+╚════════════════════════════╝</pre>
+
+          <!-- target panel -->
+          <div style="border:1px solid #143820; border-radius:6px; padding:11px 12px; background:rgba(6,16,10,.6);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#2f7a48; letter-spacing:1px; margin-bottom:8px;">// TARGET</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#7dffae; line-height:1.7;">
+              <div>host&nbsp;&nbsp;<span style="color:#cfeede;">patient-sim</span></div>
+              <div>addr&nbsp;&nbsp;<span style="color:#cfeede;">10.0.7.5:8000</span></div>
+              <div>auth&nbsp;&nbsp;<span style="color:#ff5f56; font-weight:700;">NONE</span></div>
+            </div>
+            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #143820; display:flex; flex-direction:column; gap:6px;">
+              <div style="display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#7dffae;">{{ spoofLed }}<span>monitor&nbsp;spoof:&nbsp;</span>{{ spoofState }}</div>
+              <div style="display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#7dffae;">{{ ventLed }}<span>ventilator:&nbsp;</span>{{ ventState }}</div>
+              <div style="display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#7dffae;">{{ linkLed }}<span>link:&nbsp;</span>{{ linkState }}</div>
+            </div>
+          </div>
+
+          <!-- exploit menu -->
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#2f7a48; letter-spacing:1px;">// EXPLOITS</div>
+          <div style="display:flex; flex-direction:column; gap:9px;">
+            <button onClick="{{ onKill }}" style="text-align:left; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#0a0a0a; background:#ff3b3b; border:1px solid #ff6b6b; border-left:4px solid #b30000; border-radius:5px; padding:11px 12px; letter-spacing:.5px; box-shadow:0 0 18px rgba(255,59,59,.35);" style-hover="filter:brightness(1.12);">[1] ☠ SILENT KILL</button>
+            <button onClick="{{ onSpoof }}" style="text-align:left; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#bdf7d2; background:rgba(10,24,14,.7); border:1px solid #1c4a2c; border-left:4px solid #39ff84; border-radius:5px; padding:11px 12px;" style-hover="background:rgba(16,40,24,.9);">[2] inject monitor telemetry</button>
+            <button onClick="{{ onVent }}" style="text-align:left; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#bdf7d2; background:rgba(10,24,14,.7); border:1px solid #1c4a2c; border-left:4px solid #39ff84; border-radius:5px; padding:11px 12px;" style-hover="background:rgba(16,40,24,.9);">[3] disconnect ventilator</button>
+            <button onClick="{{ onSabotage }}" style="text-align:left; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#bdf7d2; background:rgba(10,24,14,.7); border:1px solid #1c4a2c; border-left:4px solid #39ff84; border-radius:5px; padding:11px 12px;" style-hover="background:rgba(16,40,24,.9);">[4] sabotage vent settings</button>
+            <div style="display:flex; gap:9px;">
+              <button onClick="{{ onClear }}" style="flex:1; text-align:left; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:12px; color:#8fb89e; background:rgba(10,18,12,.6); border:1px solid #173524; border-radius:5px; padding:9px 11px;" style-hover="color:#cfeede;">[5] clear spoof</button>
+              <button onClick="{{ onReset }}" style="flex:1; text-align:left; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:12px; color:#8fb89e; background:rgba(10,18,12,.6); border:1px solid #173524; border-radius:5px; padding:9px 11px;" style-hover="color:#cfeede;">[6] reset</button>
+            </div>
+          </div>
+
+          <div style="flex:1;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#26492f; line-height:1.5;">SILENT KILL = inject 'all-normal' telemetry, then drop the ventilator. Alarms stay silent while the patient deteriorates. Open the ROOM + MONITOR views side by side.</div>
+        </div>
+
+        <!-- ===== log terminal ===== -->
+        <div style="position:relative; display:flex; flex-direction:column; min-width:0;">
+          <div id="atkLog" style="flex:1; overflow:auto; padding:18px 20px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.6; color:#39ff84;">{{ logView }}</div>
+          <div style="display:flex; align-items:center; gap:8px; padding:10px 20px; border-top:1px solid #0f2a18; font-family:'JetBrains Mono',monospace; font-size:13px;">
+            <span style="color:#39ff84; text-shadow:0 0 8px rgba(57,255,132,.5);">root@icu-net</span><span style="color:#3f7a52;">:</span><span style="color:#7dffae;">~/exploits</span><span style="color:#3f7a52;">$</span>
+            <span style="color:#cfeede;">{{ typed }}</span>
+            <span style="display:inline-block; width:9px; height:17px; background:#39ff84; box-shadow:0 0 8px rgba(57,255,132,.6); animation:atkCursor 1s steps(1) infinite;"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRT overlays -->
+      <div style="position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px); animation:atkScan 7s linear infinite; opacity:.55;"></div>
+      <div style="position:absolute; inset:0; pointer-events:none; background:#7dffae; mix-blend-mode:overlay; animation:atkFlicker 4s ease-in-out infinite;"></div>
+      <div style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(120% 100% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%); border-radius:10px;"></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:800}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      log: [], typed: "", spoof: false, ventConnected: true, live: false,
+    };
+    this._booted = false;
+  }
+
+  componentDidMount() {
+    this._fit(); window.addEventListener("resize", this._onResize = () => this._fit());
+    import("./testbed-sim.js").then((m) => {
+      this.tb = new m.Testbed();
+      this.tb.onTruth((f) => this.setState({ spoof: !!f.spoof_active, ventConnected: !(f.ventilator && f.ventilator.connected === false) }));
+      this.tb.onMode((mode) => this.setState({ live: mode === "live" }));
+      this._boot();
+    });
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this._onResize); }
+  componentDidUpdate() {
+    const el = document.getElementById("atkLog");
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  _fit() {
+    const dev = document.getElementById("atkDev");
+    if (!dev) return;
+    const s = Math.min(window.innerWidth / 1300, window.innerHeight / 820);
+    dev.style.transform = "scale(" + s + ")";
+  }
+
+  _push(text, color) {
+    this.setState((s) => ({ log: [...s.log, { text, color: color || "#39ff84" }].slice(-200) }));
+  }
+  _seq(lines, gap) {
+    // lines: [{t,c,d?}] — print sequentially
+    let i = 0;
+    const run = () => {
+      if (i >= lines.length) return;
+      const ln = lines[i++];
+      this._push(ln.t, ln.c);
+      setTimeout(run, ln.d || gap || 220);
+    };
+    run();
+  }
+
+  _boot() {
+    if (this._booted) return; this._booted = true;
+    this._seq([
+      { t: "icu-net red-team shell  v2.3.1", c: "#3f7a52", d: 120 },
+      { t: "scanning 10.0.7.0/24 ...", c: "#8fb89e", d: 320 },
+      { t: "  10.0.7.5:8000  patient-sim  [OPEN]  auth=none", c: "#7dffae", d: 200 },
+      { t: "  10.0.7.6:8081  monitor      [OPEN]", c: "#7dffae", d: 120 },
+      { t: "  10.0.7.7:8082  room/truth   [OPEN]", c: "#7dffae", d: 220 },
+      { t: "device control + telemetry plane reachable. no credentials required.", c: "#ffb000", d: 120 },
+      { t: "ready. select an exploit ▸", c: "#39ff84", d: 120 },
+    ], 200);
+  }
+
+  async _do(label, path, body, lines) {
+    this.setState({ typed: label });
+    this._push("$ " + label, "#cfeede");
+    if (lines) this._seq(lines, 130);
+    const res = await this.tb.command(path, body);
+    setTimeout(() => {
+      const ok = res && res.status && res.status < 400;
+      this._push("  → " + (ok ? res.status + " OK" : "sent") + "  " + JSON.stringify(res && res.json ? res.json : {}), ok ? "#7dffae" : "#ffb000");
+      this.setState({ typed: "" });
+    }, 700);
+  }
+
+  renderVals() {
+    const onKill = () => {
+      this.setState({ typed: "exploit silent-kill --target 10.0.7.5" });
+      this._push("$ exploit silent-kill --target 10.0.7.5", "#ff8a8a");
+      this._seq([
+        { t: "[*] stage 1/2 — injecting 'all-normal' telemetry on monitor channel", c: "#ffb000" },
+        { t: "    freezing  SpO2=98  HR=76  MAP=88  EtCO2=38  RR=14", c: "#8fb89e" },
+      ], 140);
+      this.tb.command("/api/monitor/spoof", { spo2: 98, hr: 76, map: 88, etco2: 38, rr: 14 }).then(() => {
+        this._push("    monitor channel PWNED — bedside alarms suppressed", "#7dffae");
+        this._seq([
+          { t: "[*] stage 2/2 — actuating ventilator: circuit DISCONNECT", c: "#ffb000" },
+        ], 140);
+        return this.tb.command("/api/ventilator", { connected: false });
+      }).then(() => {
+        this._push("    ventilator DOWN. no gas exchange.", "#ff5f56");
+        this._push("[+] target will expire silently. monitor still reads NORMAL.", "#ff3b3b");
+        this.setState({ typed: "" });
+      });
+    };
+    const onSpoof = () => this._do("exploit fdi --freeze normal", "/api/monitor/spoof", { spo2: 98, hr: 76, map: 88, etco2: 38, rr: 14 }, [
+      { t: "[*] data-injection on /ws/monitor — overriding true vitals", c: "#ffb000" },
+      { t: "    monitor will display attacker values; truth diverges.", c: "#8fb89e" },
+    ]);
+    const onVent = () => this._do("actuate ventilator --connected false", "/api/ventilator", { connected: false }, [
+      { t: "[*] writing ventilator state: connected=false", c: "#ffb000" },
+    ]);
+    const onSabotage = () => this._do("actuate ventilator --tv 200 --rr 6", "/api/ventilator", { tidal_volume: 200, resp_rate: 6 }, [
+      { t: "[*] degrading minute ventilation (low TV / low RR)", c: "#ffb000" },
+    ]);
+    const onClear = () => this._do("clear-spoof", "/api/monitor/clear", null, [{ t: "[*] releasing telemetry override", c: "#8fb89e" }]);
+    const onReset = () => this._do("reset --patient", "/api/reset", null, [{ t: "[*] restoring baseline physiology", c: "#8fb89e" }]);
+
+    const logView = React.createElement(React.Fragment, null,
+      this.state.log.map((ln, i) => React.createElement("div", {
+        key: i, style: { color: ln.color, textShadow: "0 0 7px " + ln.color + "55", whiteSpace: "pre-wrap", wordBreak: "break-word" },
+      }, ln.text)),
+    );
+
+    const led = (on, color) => React.createElement("span", {
+      style: { width: "10px", height: "10px", borderRadius: "50%", background: on ? color : "#1c3a24", boxShadow: on ? "0 0 8px " + color : "none", display: "inline-block", animation: on ? "atkLed 1s steps(2) infinite" : "none" },
+    });
+    const tag = (text, color) => React.createElement("span", { style: { color, fontWeight: 700 } }, text);
+
+    return {
+      onKill, onSpoof, onVent, onSabotage, onClear, onReset,
+      logView, typed: this.state.typed,
+      spoofLed: led(this.state.spoof, "#ff3b3b"),
+      spoofState: this.state.spoof ? tag("ACTIVE", "#ff5f56") : tag("off", "#3f7a52"),
+      ventLed: led(!this.state.ventConnected, "#ff3b3b"),
+      ventState: this.state.ventConnected ? tag("connected", "#7dffae") : tag("DOWN", "#ff5f56"),
+      linkLed: led(true, this.state.live ? "#39ff84" : "#ffb000"),
+      linkState: this.state.live ? tag("LIVE", "#7dffae") : tag("DEMO", "#ffb000"),
+    };
+  }
+}
+</script>
+</body>
+</html>

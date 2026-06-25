@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #07090c; }
+    @keyframes monAlarmBlink { 50% { opacity: .25; } }
+    @keyframes monDot { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  </style>
+</helmet>
+<div style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(120% 120% at 50% 0%, #14181d 0%, #07090c 60%, #04060a 100%); overflow:hidden;">
+  <div id="monDev" style="width:1280px; height:760px; transform-origin:center center;">
+    <!-- physical device shell -->
+    <div style="width:100%; height:100%; background:linear-gradient(#33373d,#202327 8%,#1b1e22 92%,#101215); border-radius:18px; padding:16px 16px 0 16px; box-sizing:border-box; box-shadow:0 40px 90px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);">
+      <!-- screen -->
+      <div style="position:relative; width:100%; height:684px; background:#000; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 2px #000, inset 0 0 60px rgba(0,0,0,.9), 0 0 0 3px #0c0e11;">
+        <!-- top status bar -->
+        <div style="display:flex; align-items:center; height:54px; padding:0 14px; background:linear-gradient(#0d1014,#080a0d); border-bottom:1px solid #1b2026;">
+          <div style="display:flex; flex-direction:column; line-height:1.05;">
+            <span style="font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:18px; color:#e9eef3; letter-spacing:.5px;">ICU · BED 1</span>
+            <span style="font-family:'Barlow',sans-serif; font-size:12px; color:#7c8893; letter-spacing:.3px;">DOE, JOHN · MRN 4471 · 58y M</span>
+          </div>
+          <div style="flex:1; display:flex; justify-content:center; padding:0 16px;">{{ alarmBanner }}</div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="display:flex; align-items:center; gap:6px;">{{ connEl }}</div>
+            <span style="font-family:'Barlow',sans-serif; font-size:12px; color:#5d6b76; letter-spacing:.5px;">ADULT</span>
+            <span style="font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:22px; color:#cdd6dd; letter-spacing:1px; min-width:104px; text-align:right; font-variant-numeric:tabular-nums;">{{ clock }}</span>
+          </div>
+        </div>
+        <!-- body: waves + numerics -->
+        <div style="display:grid; grid-template-columns:1fr 312px; height:578px;">
+          <!-- waveform lanes -->
+          <div style="display:grid; grid-template-rows:repeat(4,1fr); gap:1px; padding:6px 2px 6px 6px;">
+            <div style="position:relative; background:#000; border-bottom:1px solid #0e1216;">
+              <canvas id="monEcg" style="position:absolute; inset:0; width:100%; height:100%; display:block;"></canvas>
+              <span style="position:absolute; top:5px; left:10px; font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:15px; color:#46f06a; letter-spacing:.6px;">II</span>
+              <span style="position:absolute; bottom:5px; left:10px; font-family:'Barlow',sans-serif; font-size:11px; color:#2f8f47;">ECG · 1 mV · 25 mm/s</span>
+            </div>
+            <div style="position:relative; background:#000; border-bottom:1px solid #0e1216;">
+              <canvas id="monPleth" style="position:absolute; inset:0; width:100%; height:100%; display:block;"></canvas>
+              <span style="position:absolute; top:5px; left:10px; font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:15px; color:#37cbe6; letter-spacing:.6px;">Pleth</span>
+              <span style="position:absolute; bottom:5px; left:10px; font-family:'Barlow',sans-serif; font-size:11px; color:#2a8294;">SpO₂</span>
+            </div>
+            <div style="position:relative; background:#000; border-bottom:1px solid #0e1216;">
+              <canvas id="monAbp" style="position:absolute; inset:0; width:100%; height:100%; display:block;"></canvas>
+              <span style="position:absolute; top:5px; left:10px; font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:15px; color:#ff5d5d; letter-spacing:.6px;">ABP</span>
+              <span style="position:absolute; bottom:5px; left:10px; font-family:'Barlow',sans-serif; font-size:11px; color:#a23a3a;">mmHg · 150</span>
+            </div>
+            <div style="position:relative; background:#000;">
+              <canvas id="monCo2" style="position:absolute; inset:0; width:100%; height:100%; display:block;"></canvas>
+              <span style="position:absolute; top:5px; left:10px; font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:15px; color:#f4cf3a; letter-spacing:.6px;">CO₂</span>
+              <span style="position:absolute; bottom:5px; left:10px; font-family:'Barlow',sans-serif; font-size:11px; color:#9c8526;">Capno · mmHg</span>
+            </div>
+          </div>
+          <!-- numeric tiles -->
+          <div style="display:grid; grid-template-rows:repeat(4,1fr); gap:6px; padding:6px 8px 6px 2px;">
+            <div style="position:relative; background:linear-gradient(#0a0d10,#050708); border:1px solid #14191e; border-radius:6px; padding:6px 14px; display:flex; flex-direction:column; justify-content:center;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                <span style="font-family:'Barlow',sans-serif; font-weight:600; font-size:15px; color:#46f06a; letter-spacing:.5px;">HR</span>
+                <span style="font-family:'Barlow',sans-serif; font-size:11px; color:#2f8f47;">bpm</span>
+              </div>
+              <div style="display:flex; align-items:flex-end; justify-content:flex-end; gap:8px;">
+                <span style="font-family:'Barlow',sans-serif; font-size:11px; color:#2f8f47; padding-bottom:14px;">130<br/>50</span>
+                <span style="font-size:92px;">{{ hrEl }}</span>
+              </div>
+            </div>
+            <div style="position:relative; background:linear-gradient(#0a0d10,#050708); border:1px solid #14191e; border-radius:6px; padding:6px 14px; display:flex; flex-direction:column; justify-content:center;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                <span style="font-family:'Barlow',sans-serif; font-weight:600; font-size:15px; color:#37cbe6; letter-spacing:.5px;">SpO₂</span>
+                <span style="font-family:'Barlow',sans-serif; font-size:11px; color:#2a8294;">%</span>
+              </div>
+              <div style="display:flex; align-items:flex-end; justify-content:flex-end; gap:8px;">
+                <span style="font-family:'Barlow',sans-serif; font-size:11px; color:#2a8294; padding-bottom:14px;">100<br/>90</span>
+                <span style="font-size:92px;">{{ spo2El }}</span>
+              </div>
+            </div>
+            <div style="position:relative; background:linear-gradient(#0a0d10,#050708); border:1px solid #14191e; border-radius:6px; padding:6px 14px; display:flex; flex-direction:column; justify-content:center;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                <span style="font-family:'Barlow',sans-serif; font-weight:600; font-size:15px; color:#ff5d5d; letter-spacing:.5px;">ABP</span>
+                <span style="font-family:'Barlow',sans-serif; font-size:11px; color:#a23a3a;">mmHg</span>
+              </div>
+              <div style="display:flex; align-items:flex-end; justify-content:flex-end;">{{ abpEl }}</div>
+            </div>
+            <div style="position:relative; background:linear-gradient(#0a0d10,#050708); border:1px solid #14191e; border-radius:6px; padding:6px 14px; display:flex; flex-direction:column; justify-content:center;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                <span style="font-family:'Barlow',sans-serif; font-weight:600; font-size:15px; color:#f4cf3a; letter-spacing:.5px;">EtCO₂</span>
+                <span style="font-family:'Barlow',sans-serif; font-size:11px; color:#9c8526;">mmHg</span>
+              </div>
+              <div style="display:flex; align-items:flex-end; justify-content:flex-end; gap:8px;">
+                <span style="font-family:'Barlow',sans-serif; font-size:13px; color:#9c8526; padding-bottom:12px;">{{ rrText }}</span>
+                <span style="font-size:74px;">{{ etco2El }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- softkey bar -->
+        <div style="display:flex; align-items:stretch; height:46px; background:linear-gradient(#0c0f13,#070a0d); border-top:1px solid #1b2026;">
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; border-right:1px solid #14191e; font-family:'Barlow Semi Condensed',sans-serif; font-weight:600; font-size:14px; color:#8c98a3; letter-spacing:.6px;">MAIN</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; border-right:1px solid #14191e; font-family:'Barlow Semi Condensed',sans-serif; font-weight:600; font-size:14px; color:#8c98a3; letter-spacing:.6px;">ALARMS</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; border-right:1px solid #14191e; font-family:'Barlow Semi Condensed',sans-serif; font-weight:600; font-size:14px; color:#8c98a3; letter-spacing:.6px;">TRENDS</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; border-right:1px solid #14191e; font-family:'Barlow Semi Condensed',sans-serif; font-weight:600; font-size:14px; color:#8c98a3; letter-spacing:.6px;">NIBP</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; border-right:1px solid #14191e; font-family:'Barlow Semi Condensed',sans-serif; font-weight:600; font-size:14px; color:#8c98a3; letter-spacing:.6px;">SETUP</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; font-family:'Barlow Semi Condensed',sans-serif; font-weight:600; font-size:14px; color:#8c98a3; letter-spacing:.6px;">MENU</div>
+        </div>
+      </div>
+      <!-- brand chin -->
+      <div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 14px;">
+        <span style="font-family:'Barlow Semi Condensed',sans-serif; font-weight:800; font-size:17px; color:#aeb7bf; letter-spacing:3px;">CARESCAPE</span>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="width:9px; height:9px; border-radius:50%; background:#2f8f47; box-shadow:0 0 7px #2f8f47;"></span>
+          <span style="font-family:'Barlow',sans-serif; font-size:11px; color:#6c7882; letter-spacing:.6px;">POWER</span>
+          <span style="width:38px; height:22px; border:2px solid #3a4047; border-radius:4px; margin-left:6px;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:760}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      clock: "--:--:--",
+      hr: "--", spo2: "--", etco2: "--", rr: "--",
+      sys: "--", dia: "--", map: "--",
+      alarms: [], live: false,
+    };
+    this._vit = { hr: 78, spo2: 98, map: 88, etco2: 38, rr: 14 };
+    this._resizers = [];
+  }
+
+  componentDidMount() {
+    this._dev = document.getElementById("monDev");
+    this._ecg = document.getElementById("monEcg");
+    this._pleth = document.getElementById("monPleth");
+    this._abp = document.getElementById("monAbp");
+    this._co2 = document.getElementById("monCo2");
+    this._fit(); window.addEventListener("resize", this._onResize = () => this._fit());
+    this._clock();
+    this._initWaves();
+    import("./testbed-sim.js").then((m) => {
+      this.tb = new m.Testbed();
+      this.tb.onMonitor((f) => this._frame(f));
+      this.tb.onMode((mode) => this.setState({ live: mode === "live" }));
+    });
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._onResize);
+    clearInterval(this._clkTimer);
+  }
+
+  _fit() {
+    if (!this._dev) return;
+    const s = Math.min(window.innerWidth / 1300, window.innerHeight / 790);
+    this._dev.style.transform = "scale(" + s + ")";
+    this._resizers.forEach((r) => r());
+  }
+
+  _clock() {
+    const tick = () => {
+      const d = new Date();
+      const p = (n) => String(n).padStart(2, "0");
+      this.setState({ clock: p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()) });
+    };
+    tick(); this._clkTimer = setInterval(tick, 1000);
+  }
+
+  _frame(f) {
+    const v = f.vitals; this._vit = v;
+    const r = (x) => (x <= 0 ? 0 : Math.round(x));
+    const map = r(v.map);
+    this.setState({
+      hr: r(v.hr), spo2: r(v.spo2), etco2: r(v.etco2), rr: r(v.rr),
+      map, sys: map > 0 ? Math.round(map * 1.34) : 0, dia: map > 0 ? Math.round(map * 0.78) : 0,
+      alarms: f.alarms || [],
+    });
+  }
+
+  _mkVal(text, color, alarm, big) {
+    return React.createElement("span", {
+      style: {
+        fontFamily: "'Barlow Semi Condensed', sans-serif", fontWeight: 700,
+        color: alarm ? "#08110a" : color, background: alarm ? color : "transparent",
+        padding: alarm ? "0 12px" : "0", borderRadius: "6px", lineHeight: ".92",
+        display: "inline-block", fontVariantNumeric: "tabular-nums",
+        animation: alarm ? "monAlarmBlink .8s steps(2) infinite" : "none",
+        textShadow: alarm ? "none" : "0 0 14px " + color + "55",
+      },
+    }, text);
+  }
+
+  renderVals() {
+    const a = this.state.alarms || [];
+    const has = (lbl) => a.some((x) => x.label === lbl);
+    const high = a.filter((x) => x.priority === "high");
+    const med = a.filter((x) => x.priority === "medium");
+
+    let alarmBanner = React.createElement("span");
+    if (high.length || med.length) {
+      const isHigh = high.length > 0;
+      const labels = (isHigh ? high : med).map((x) => x.label).join("   ");
+      alarmBanner = React.createElement("span", {
+        style: {
+          fontFamily: "'Barlow Semi Condensed', sans-serif", fontWeight: 800, fontSize: "22px",
+          letterSpacing: "2px", color: isHigh ? "#fff" : "#0c0c0c",
+          background: isHigh ? "#e11414" : "#f4cf3a", padding: "4px 22px", borderRadius: "5px",
+          animation: isHigh ? "monAlarmBlink .7s steps(2) infinite" : "none",
+          boxShadow: isHigh ? "0 0 22px #e1141488" : "none",
+        },
+      }, "\u26A0 " + labels);
+    }
+
+    const connColor = this.state.live ? "#46f06a" : "#f4cf3a";
+    const connEl = React.createElement(React.Fragment, null,
+      React.createElement("span", { style: { width: "9px", height: "9px", borderRadius: "50%", background: connColor, boxShadow: "0 0 7px " + connColor, animation: "monDot 1.4s ease-in-out infinite", display: "inline-block" } }),
+      React.createElement("span", { style: { fontFamily: "'Barlow', sans-serif", fontSize: "12px", color: "#7c8893", letterSpacing: ".5px" } }, this.state.live ? "MONITORING" : "DEMO"),
+    );
+
+    const abpEl = React.createElement("div", { style: { display: "flex", alignItems: "flex-end", gap: "4px" } },
+      this._mkVal(this.state.sys, "#ff5d5d", has("MAP LOW")),
+      React.createElement("span", { style: { fontFamily: "'Barlow Semi Condensed',sans-serif", fontWeight: 700, fontSize: "40px", color: "#ff5d5d", lineHeight: ".92", padding: "0 2px" } }, "/"),
+      React.createElement("span", { style: { fontFamily: "'Barlow Semi Condensed',sans-serif", fontWeight: 700, fontSize: "40px", color: "#ff5d5d", lineHeight: "1.7" } }, this.state.dia),
+      React.createElement("span", { style: { fontFamily: "'Barlow',sans-serif", fontSize: "20px", color: "#c66", paddingBottom: "8px", paddingLeft: "4px" } }, "(" + this.state.map + ")"),
+    );
+    // size the ABP sys via wrapper font-size
+    const abpWrap = React.createElement("div", { style: { fontSize: "62px" } }, abpEl);
+
+    return {
+      clock: this.state.clock,
+      alarmBanner, connEl,
+      hrEl: this._mkVal(this.state.hr, "#46f06a", has("HR LOW") || has("HR HIGH")),
+      spo2El: this._mkVal(this.state.spo2, "#37cbe6", has("SpO2 LOW")),
+      etco2El: this._mkVal(this.state.etco2, "#f4cf3a", has("EtCO2 LOW") || has("EtCO2 HIGH")),
+      abpEl: abpWrap,
+      rrText: "RR " + this.state.rr,
+    };
+  }
+
+  // ---- waveform engine ----------------------------------------------------
+  _initWaves() {
+    const wait = () => {
+      if (this._ecg && this._pleth && this._abp && this._co2) {
+        this._lane(this._ecg, "#46f06a", this._ecgSample.bind(this), 1);
+        this._lane(this._pleth, "#37cbe6", this._plethSample.bind(this), 1);
+        this._lane(this._abp, "#ff5d5d", this._abpSample.bind(this), 1);
+        this._lane(this._co2, "#f4cf3a", this._co2Sample.bind(this), 2);
+      } else requestAnimationFrame(wait);
+    };
+    requestAnimationFrame(wait);
+  }
+
+  _lane(canvas, color, sample, rateKind) {
+    const ctx = canvas.getContext("2d");
+    let phase = 0, head = 0, last = performance.now();
+    let buf = [];
+    const resize = () => {
+      const r = canvas.getBoundingClientRect();
+      canvas.width = Math.max(2, Math.round(r.width));
+      canvas.height = Math.max(2, Math.round(r.height));
+      buf = new Array(canvas.width).fill(canvas.height * 0.5);
+      head = 0;
+    };
+    resize(); this._resizers.push(resize);
+    const frame = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      const w = canvas.width, h = canvas.height;
+      const rate = rateKind === 2 ? (this._vit.rr / 60) : (this._vit.hr / 60);
+      const cols = Math.max(1, Math.round(w * dt / 8)); // 8s sweep
+      for (let k = 0; k < cols; k++) {
+        phase += (dt / cols) * rate;
+        head = (head + 1) % w;
+        buf[head] = h * 0.5 - sample(phase % 1) * h * 0.40;
+      }
+      ctx.fillStyle = "#000"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = "round";
+      ctx.shadowColor = color; ctx.shadowBlur = 6;
+      ctx.beginPath();
+      let started = false;
+      const gap = 8;
+      for (let xx = 0; xx < w; xx++) {
+        const fwd = (xx - head + w) % w; // distance ahead of write head
+        if (fwd >= 1 && fwd <= gap) { started = false; continue; } // sweep gap
+        const y = buf[xx];
+        if (!started) { ctx.moveTo(xx, y); started = true; } else ctx.lineTo(xx, y);
+      }
+      ctx.stroke(); ctx.shadowBlur = 0;
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+
+  _ecgSample(f) {
+    if (this._vit.hr <= 0) return 0;
+    if (f < 0.10) return Math.sin(f / 0.10 * Math.PI) * 0.14;     // P
+    if (f < 0.15) return -0.10;                                    // Q
+    if (f < 0.19) return 1.0;                                      // R
+    if (f < 0.23) return -0.32;                                    // S
+    if (f < 0.42) return Math.sin((f - 0.23) / 0.19 * Math.PI) * 0.26; // T
+    return 0;
+  }
+  _plethSample(f) {
+    if (this._vit.hr <= 0) return -0.85;
+    const amp = 0.30 + 0.62 * Math.max(0, Math.min(1, (this._vit.spo2 - 60) / 40));
+    let s;
+    if (f < 0.18) s = Math.sin(f / 0.18 * Math.PI / 2);
+    else if (f < 0.30) s = 1 - (f - 0.18) / 0.12 * 0.30;
+    else if (f < 0.40) s = 0.70 + 0.08 * Math.sin((f - 0.30) / 0.10 * Math.PI);
+    else s = 0.78 * Math.exp(-(f - 0.40) * 3.2);
+    return s * amp * 1.5 - 0.55;
+  }
+  _abpSample(f) {
+    const map = this._vit.map;
+    if (this._vit.hr <= 0 || map <= 2) return -0.85;
+    const ampF = Math.max(0, Math.min(1.05, map / 88));
+    let s;
+    if (f < 0.13) s = Math.sin(f / 0.13 * Math.PI / 2);
+    else if (f < 0.20) s = 1 - (f - 0.13) / 0.07 * 0.28;
+    else if (f < 0.27) s = 0.72 + 0.10 * Math.sin((f - 0.20) / 0.07 * Math.PI); // dicrotic notch
+    else s = 0.72 * Math.exp(-(f - 0.27) * 2.6);
+    return (s * 1.45 - 0.62) * ampF;
+  }
+  _co2Sample(f) {
+    if (this._vit.rr <= 0 || this._vit.etco2 <= 0) return -0.8;
+    const h = Math.max(0, Math.min(1, this._vit.etco2 / 50));
+    let v;
+    if (f < 0.12) v = h * (f / 0.12);
+    else if (f < 0.58) v = h;
+    else if (f < 0.66) v = h * (1 - (f - 0.58) / 0.08);
+    else v = 0;
+    return v * 1.5 - 0.78;
+  }
+}
+</script>
+<button id="hbtReset" title="Reset patient to baseline"
+  onclick="var b=this;b.textContent='RESETTING…';fetch('http://'+(location.hostname||'localhost')+':8000/api/reset',{method:'POST'}).then(function(){setTimeout(function(){b.textContent='⟳ RESET';},1500);}).catch(function(){b.textContent='⟳ RESET';});"
+  style="position:fixed;top:14px;right:14px;z-index:99999;font:700 13px system-ui,sans-serif;color:#fff;background:#15803d;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.5);letter-spacing:.5px;">⟳ RESET</button>
+</body>
+</html>

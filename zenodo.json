@@ -1,0 +1,29 @@
+{
+  "title": "icu-bed-testbed: A Reproducible Containerized Testbed for Demonstrating Cybersecurity Risk in Hospital Bedside Devices",
+  "description": "Code and container definitions for a reproducible, low-cost testbed emulating an intensive-care bed (ventilator + cardiorespiratory patient model + multi-parameter bedside monitor + room/instrumentation view) over the IEEE 11073 SDC point-of-care protocol. Includes a worked double false-data-injection attack: an unauthenticated adversary commands the ventilator into a non-ventilating state (actuation injection) while standing up rogue SDC providers that impersonate both the patient monitor and the ventilator (telemetry injection). Every networked readout, including the ventilator's own screen, keeps showing normal vitals and no network-sourced alarm fires while the validated physiology deteriorates to cardiac arrest; the only honest signal left is the physical bellows, driven by the true delivered gas, which stops.",
+  "creators": [
+    {"name": "Faria, Rubens Alexandre de", "affiliation": "Universidade Tecnológica Federal do Paraná"},
+    {"name": "Lemos, Filipe Augusto da Luz", "affiliation": "Syracuse University", "orcid": "0000-0002-5209-119X"},
+    {"name": "Oroski, Elder", "affiliation": "Universidade Tecnológica Federal do Paraná"}
+  ],
+  "keywords": [
+    "medical device security",
+    "hospital cybersecurity",
+    "patient safety",
+    "false data injection",
+    "telemetry spoofing",
+    "mechanical ventilator",
+    "patient monitor",
+    "digital twin",
+    "IEEE 11073 SDC",
+    "Pulse Physiology Engine",
+    "critical infrastructure protection",
+    "container-based testbed",
+    "reproducible research",
+    "biomedical engineering"
+  ],
+  "license": {"code": "Apache-2.0", "data": "CC-BY-4.0"},
+  "language": "eng",
+  "access_right": "open",
+  "upload_type": "software"
+}
