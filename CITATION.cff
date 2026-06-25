@@ -17,7 +17,15 @@ authors:
 version: "0.1.0"
 date-released: "2026-06-24"
 license: Apache-2.0
+doi: "10.5281/zenodo.20838395"
 repository-code: "https://github.com/FALLCWB/icu-bed-testbed"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20838395"
+    description: "Concept DOI (all versions)"
+  - type: doi
+    value: "10.5281/zenodo.20838396"
+    description: "This version (v0.1.0)"
 keywords:
   - "medical device security"
   - "hospital cybersecurity"

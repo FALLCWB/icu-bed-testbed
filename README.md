@@ -92,7 +92,10 @@ release. Please cite the version you used (metadata also in [`CITATION.cff`](CIT
 
 > de Faria, R. A.; Lemos, F. A. da L.; Oroski, E. *icu-bed-testbed: A Reproducible
 > Containerized Testbed for Demonstrating Cybersecurity Risk in Hospital Bedside
-> Devices* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.<resolved by the badge above>
+> Devices.* Zenodo. https://doi.org/10.5281/zenodo.20838395
+
+The DOI above is the concept DOI (always resolves to the latest version); the
+v0.1.0 snapshot is https://doi.org/10.5281/zenodo.20838396.
 
 ## License
 
