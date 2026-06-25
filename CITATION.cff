@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "icu-bed-testbed: A Reproducible Containerized Testbed for Demonstrating Cybersecurity Risk in Hospital Bedside Devices"
+type: software
+authors:
+  - family-names: "Faria"
+    name-particle: "de"
+    given-names: "Rubens Alexandre"
+    affiliation: "Universidade Tecnológica Federal do Paraná"
+  - family-names: "Lemos"
+    given-names: "Filipe Augusto da Luz"
+    affiliation: "Syracuse University"
+    orcid: "https://orcid.org/0000-0002-5209-119X"
+  - family-names: "Oroski"
+    given-names: "Elder"
+    affiliation: "Universidade Tecnológica Federal do Paraná"
+version: "0.1.0"
+date-released: "2026-06-24"
+license: Apache-2.0
+repository-code: "https://github.com/FALLCWB/icu-bed-testbed"
+keywords:
+  - "medical device security"
+  - "hospital cybersecurity"
+  - "patient safety"
+  - "false data injection"
+  - "digital twin"
+  - "IEEE 11073 SDC"
+  - "Pulse Physiology Engine"
+  - "reproducible testbed"

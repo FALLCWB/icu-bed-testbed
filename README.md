@@ -1,5 +1,8 @@
 # icu-bed-testbed
 
+[![DOI](https://zenodo.org/badge/1279769496.svg)](https://zenodo.org/badge/latestdoi/1279769496)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 A reproducible, containerized testbed that emulates an intensive-care bed for
 medical-device cybersecurity research and teaching. Validated physiology drives
 ventilator and patient-monitor **digital twins** exposed over the real
@@ -81,6 +84,15 @@ Disconnection alone triggers alarms and is survivable if reversed in time
 is a false picture with no physical harm. Together they remove the feedback loop
 clinical safety depends on: the patient is harmed while every networked display
 says otherwise, and only the physical bellows betrays it.
+
+## How to cite
+
+This testbed is archived on Zenodo; the DOI badge above resolves to the latest
+release. Please cite the version you used (metadata also in [`CITATION.cff`](CITATION.cff)):
+
+> de Faria, R. A.; Lemos, F. A. da L.; Oroski, E. *icu-bed-testbed: A Reproducible
+> Containerized Testbed for Demonstrating Cybersecurity Risk in Hospital Bedside
+> Devices* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.<resolved by the badge above>
 
 ## License
 
